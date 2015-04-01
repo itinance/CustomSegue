@@ -7,23 +7,30 @@
 @implementation CustomUnwindSegue
 
 - (void)perform {
-    UIViewController *sourceViewController = self.sourceViewController;
-    UIViewController *destinationViewController = self.destinationViewController;
+    UIViewController *source = self.sourceViewController;
+    UIViewController *destination = self.destinationViewController;
     
     // Add view to super view temporarily
-    [sourceViewController.view.superview insertSubview:destinationViewController.view atIndex:0];
+    [source.view.superview insertSubview:destination.view atIndex:0];
+    
+    CGRect sourceFrame = source.view.frame;
+    sourceFrame.origin.x = sourceFrame.size.width;
+    
+    CGRect destFrame = destination.view.frame;
+    destFrame.origin.x = 0;
+    destination.view.frame = destFrame;
     
     [UIView animateWithDuration:0.5
                           delay:0.0
                         options:UIViewAnimationOptionCurveEaseInOut
                      animations:^{
                          // Shrink!
-                         sourceViewController.view.transform = CGAffineTransformMakeScale(0.05, 0.05);
-                         sourceViewController.view.center = self.targetPoint;
+                         source.view.frame = sourceFrame;
+                         destination.view.frame = destFrame;
                      }
                      completion:^(BOOL finished){
-                         [destinationViewController.view removeFromSuperview]; // remove from temp super view
-                         [sourceViewController dismissViewControllerAnimated:NO completion:NULL]; // dismiss VC
+                         [destination.view removeFromSuperview]; // remove from temp super view
+                         [source dismissViewControllerAnimated:NO completion:NULL]; // dismiss VC
                      }];
 }
 
